@@ -1,5 +1,7 @@
 package com.perpetualmaze.generator;
 
+import java.util.Objects;
+
 public class Maze {
     private long minLevel;
     private int width;
@@ -40,5 +42,26 @@ public class Maze {
     public Maze setWalls(Walls walls) {
         this.walls = walls;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Maze maze = (Maze) o;
+        return minLevel == maze.minLevel &&
+                width == maze.width &&
+                height == maze.height &&
+                Objects.equals(walls, maze.walls);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(minLevel, width, height, walls);
+    }
+
+    @Override
+    public String toString() {
+        return "Min Level: " + minLevel + "\n" + walls.toString();
     }
 }

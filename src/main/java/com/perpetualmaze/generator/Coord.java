@@ -9,6 +9,11 @@ public class Coord {
         this.col = col;
     }
 
+    public Coord(Coord other) {
+        this.row = other.getRow();
+        this.col = other.getCol();
+    }
+
     public int getRow() {
         return row;
     }
@@ -17,17 +22,18 @@ public class Coord {
         return col;
     }
 
-    public void update(int rowModifier, int colModifier) {
+    public Coord update(int rowModifier, int colModifier) {
         row += rowModifier;
         col += colModifier;
+        return this;
     }
 
-    public void update(ExitDirection exitDirection) {
-        update(exitDirection.getRowChange(), exitDirection.getColChange());
+    public Coord update(ExitDirection exitDirection) {
+        return update(exitDirection.getRowChange(), exitDirection.getColChange());
     }
 
-    public void revert(ExitDirection exitDirection) {
-        update(exitDirection.getRowChange() * -1, exitDirection.getColChange() * -1);
+    public Coord revert(ExitDirection exitDirection) {
+        return update(exitDirection.getRowChange() * -1, exitDirection.getColChange() * -1);
     }
 
     @Override

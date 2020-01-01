@@ -306,4 +306,118 @@ public class WallsTest {
         Walls deserialized = Walls.deserialize(serialized);
         assertEquals(original, deserialized);
     }
+
+    @Test
+    public void testToStringEmpty() {
+        Walls walls = new Walls(3, 4);
+        String expected =
+                // @formatter:off
+                "+  +  +  +\n" +
+                "          \n" +
+                "+  +  +  +\n" +
+                "          \n" +
+                "+  +  +  +\n" +
+                "          \n" +
+                "+  +  +  +\n" +
+                "          \n" +
+                "+  +  +  +\n";
+                // @formatter:on
+        assertEquals(expected, walls.toString());
+    }
+
+    @Test
+    public void testToStringOneCell() {
+        Walls walls = new Walls(3, 4);
+        walls.setAllWalls(new Coord(1, 1));
+        String expected =
+                // @formatter:off
+                "+  +  +  +\n" +
+                "          \n" +
+                "+  +--+  +\n" +
+                "   |  |   \n" +
+                "+  +--+  +\n" +
+                "          \n" +
+                "+  +  +  +\n" +
+                "          \n" +
+                "+  +  +  +\n";
+                // @formatter:on
+        assertEquals(expected, walls.toString());
+    }
+
+    @Test
+    public void testToStringSeveralCells() {
+        Walls walls = new Walls(3, 4);
+        walls.setAllWalls(new Coord(0, 0));
+        walls.setAllWalls(new Coord(1, 1));
+        walls.setAllWalls(new Coord(2, 2));
+        walls.setAllWalls(new Coord(3, 2));
+        String expected =
+                // @formatter:off
+                "+--+  +  +\n" +
+                "|  |      \n" +
+                "+--+--+  +\n" +
+                "   |  |   \n" +
+                "+  +--+--+\n" +
+                "      |  |\n" +
+                "+  +  +--+\n" +
+                "      |  |\n" +
+                "+  +  +--+\n";
+                // @formatter:on
+        assertEquals(expected, walls.toString());
+    }
+
+    @Test
+    public void testToStringOutsideWalls() {
+        Walls walls = new Walls(3, 4);
+        walls.setTopWall(new Coord(0, 0));
+        walls.setLeftWall(new Coord(0, 0));
+        walls.setTopWall(new Coord(0, 1));
+        walls.setTopWall(new Coord(0, 2));
+        walls.setRightWall(new Coord(0, 2));
+        walls.setLeftWall(new Coord(1, 0));
+        walls.setRightWall(new Coord(1, 2));
+        walls.setLeftWall(new Coord(2, 0));
+        walls.setRightWall(new Coord(2, 2));
+        walls.setLeftWall(new Coord(3, 0));
+        walls.setBottomWall(new Coord(3, 0));
+        walls.setBottomWall(new Coord(3, 1));
+        walls.setBottomWall(new Coord(3, 2));
+        walls.setRightWall(new Coord(3, 2));
+        String expected =
+                // @formatter:off
+                "+--+--+--+\n" +
+                "|        |\n" +
+                "+  +  +  +\n" +
+                "|        |\n" +
+                "+  +  +  +\n" +
+                "|        |\n" +
+                "+  +  +  +\n" +
+                "|        |\n" +
+                "+--+--+--+\n";
+                // @formatter:on
+        assertEquals(expected, walls.toString());
+    }
+
+    @Test
+    public void testToStringAllWalls() {
+        Walls walls = new Walls(3, 4);
+        for (int row = 0; row < walls.getHeight(); row++) {
+            for (int col = 0; col < walls.getWidth(); col++) {
+                walls.setAllWalls(new Coord(row, col));
+            }
+        }
+        String expected =
+                // @formatter:off
+                "+--+--+--+\n" +
+                "|  |  |  |\n" +
+                "+--+--+--+\n" +
+                "|  |  |  |\n" +
+                "+--+--+--+\n" +
+                "|  |  |  |\n" +
+                "+--+--+--+\n" +
+                "|  |  |  |\n" +
+                "+--+--+--+\n";
+                // @formatter:on
+        assertEquals(expected, walls.toString());
+    }
 }

@@ -41,6 +41,9 @@ public class Walls {
     }
 
     private int getTopWallBitPosition(Coord coord) {
+        if (coord.getRow() < 0 || coord.getRow() >= height || coord.getCol() < 0 || coord.getCol() >= width) {
+            throw new IllegalArgumentException("Invalid coordinate outside of bounds: " + coord);
+        }
         return (coord.getRow() * width) + coord.getCol();
     }
 
@@ -57,6 +60,9 @@ public class Walls {
     }
 
     private int getBottomWallBitPosition(Coord coord) {
+        if (coord.getRow() < 0 || coord.getRow() >= height || coord.getCol() < 0 || coord.getCol() >= width) {
+            throw new IllegalArgumentException("Invalid coordinate outside of bounds: " + coord);
+        }
         // only the bottom row has a bottom wall, otherwise we get the top wall
         // bit position for the coordinate immediately below the one specified.
         if (coord.getRow() == height - 1) {
@@ -83,6 +89,9 @@ public class Walls {
     }
 
     private int getLeftWallBitPosition(Coord coord) {
+        if (coord.getRow() < 0 || coord.getRow() >= height || coord.getCol() < 0 || coord.getCol() >= width) {
+            throw new IllegalArgumentException("Invalid coordinate outside of bounds: " + coord);
+        }
         return (width * height) + // skip past the top walls
                 (coord.getRow() * width) + coord.getCol();
     }
@@ -100,6 +109,9 @@ public class Walls {
     }
 
     private int getRightWallBitPosition(Coord coord) {
+        if (coord.getRow() < 0 || coord.getRow() >= height || coord.getCol() < 0 || coord.getCol() >= width) {
+            throw new IllegalArgumentException("Invalid coordinate outside of bounds: " + coord);
+        }
         // only the right-most column has a right wall, otherwise we return the bit position of the left wall
         // for the coordinate immediately to the right of the one specified.
         if (coord.getCol() == width - 1) {
@@ -204,6 +216,29 @@ public class Walls {
 
     @Override
     public String toString() {
-        return serialize();
+        StringBuilder str = new StringBuilder();
+        for (int row = 0; row < height; row++) {
+            // include the top walls
+            for (int col = 0; col < width; col++) {
+                str.append("+");
+                str.append(hasTopWall(new Coord(row, col)) ? "--" : "  ");
+            }
+            str.append("+\n");
+            // include the left walls
+            for (int col = 0; col < width; col++) {
+                str.append(hasLeftWall(new Coord(row, col)) ? "|" : " ");
+                //str.append(String.format("%d%d", row, col));
+                str.append("  ");
+            }
+            str.append(hasRightWall(new Coord(row, width - 1)) ? "|" : " ");
+            str.append("\n");
+        }
+        // include the bottom walls
+        for (int col = 0; col < width; col++) {
+            str.append("+");
+            str.append(hasBottomWall(new Coord(height - 1, col)) ? "--" : "  ");
+        }
+        str.append("+\n");
+        return str.toString();
     }
 }
