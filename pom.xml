@@ -19,7 +19,7 @@
         <version.javax.inject>1</version.javax.inject>
         <version.javax.ws.rs>2.1</version.javax.ws.rs>
         <version.jersey>2.27</version.jersey>
-        <version.jetty>9.4.15.v20190215</version.jetty>
+        <version.jetty>9.4.25.v20191220</version.jetty>
         <version.junit>4.12</version.junit>
         <version.slf4j>1.7.25</version.slf4j>
     </properties>
