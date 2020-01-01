@@ -4,12 +4,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import com.perpetualmaze.store.GameStore;
-import com.perpetualmaze.store.HighScoreStore;
-import com.perpetualmaze.store.PieceStore;
-import com.perpetualmaze.store.pg.PostgresGameStore;
-import com.perpetualmaze.store.pg.PostgresHighScoreStore;
-import com.perpetualmaze.store.pg.PostgresPieceStore;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -29,6 +23,7 @@ public class DependencyInjectionBinder extends AbstractBinder {
         DataSource dataSource = getDataSource(props);
         bind(dataSource).to(DataSource.class);
 
+        /*
         GameStore gameStore = new PostgresGameStore(dataSource);
         bind(gameStore).to(GameStore.class);
 
@@ -37,6 +32,7 @@ public class DependencyInjectionBinder extends AbstractBinder {
 
         PieceStore pieceStore = new PostgresPieceStore(dataSource);
         bind(pieceStore).to(PieceStore.class);
+         */
     }
 
     private Properties getProperties() {

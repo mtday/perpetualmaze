@@ -11,7 +11,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <version.flyway>5.0.7</version.flyway>
-        <version.guava>24.1.1-jre</version.guava>
         <version.hikari>2.7.8</version.hikari>
         <version.hk2>2.5.0-b42</version.hk2>
         <version.hsqldb>2.4.1</version.hsqldb>
@@ -19,26 +18,16 @@
         <version.javax.inject>1</version.javax.inject>
         <version.javax.ws.rs>2.1</version.javax.ws.rs>
         <version.jersey>2.27</version.jersey>
-        <version.jetty>9.4.15.v20190215</version.jetty>
+        <version.jetty>9.4.25.v20191220</version.jetty>
         <version.junit>4.12</version.junit>
         <version.slf4j>1.7.25</version.slf4j>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${version.guava}</version>
-        </dependency>
-        <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>${version.hikari}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${version.jackson}</version>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
