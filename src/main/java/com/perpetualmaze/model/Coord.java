@@ -1,4 +1,4 @@
-package com.perpetualmaze.generator;
+package com.perpetualmaze.model;
 
 public class Coord {
     private int row;

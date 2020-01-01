@@ -1,4 +1,4 @@
-package com.perpetualmaze.generator;
+package com.perpetualmaze.model;
 
 import org.junit.Test;
 
@@ -255,9 +255,9 @@ public class WallsTest {
     public void testRoundTripSerializationEmpty() {
         Walls original = new Walls(3, 4);
         String serialized = original.serialize();
-        assertEquals("3:4:789c030000000001", serialized);
+        assertEquals("789c030000000001", serialized);
 
-        Walls deserialized = Walls.deserialize(serialized);
+        Walls deserialized = Walls.deserialize(serialized, 3, 4);
         assertEquals(original, deserialized);
     }
 
@@ -269,9 +269,9 @@ public class WallsTest {
         original.setAllWalls(new Coord(2, 2));
 
         String serialized = original.serialize();
-        assertEquals("3:4:789c9b6929ac000003590106", serialized);
+        assertEquals("789c9b6929ac000003590106", serialized);
 
-        Walls deserialized = Walls.deserialize(serialized);
+        Walls deserialized = Walls.deserialize(serialized, 3, 4);
         assertEquals(original, deserialized);
     }
 
@@ -284,9 +284,9 @@ public class WallsTest {
             }
         }
         String serialized = original.serialize();
-        assertEquals("3:4:789cfbffff7f3d00097a037d", serialized);
+        assertEquals("789cfbffff7f3d00097a037d", serialized);
 
-        Walls deserialized = Walls.deserialize(serialized);
+        Walls deserialized = Walls.deserialize(serialized, 3, 4);
         assertEquals(original, deserialized);
     }
 
@@ -299,11 +299,11 @@ public class WallsTest {
             }
         }
         String serialized = original.serialize();
-        String expected = "300:300:789cedcc310100000400300da4d33f0a15f81c5b805501000000000000000000007ff546c6"
-                + "864aa552a9542a954aa552a9542a954aa552a9542a954aa552a9542a954aa552a9542a954aa5ba540366843a93";
+        String expected = "789cedcc310100000400300da4d33f0a15f81c5b805501000000000000000000007ff546c6864a"
+                + "a552a9542a954aa552a9542a954aa552a9542a954aa552a9542a954aa552a9542a954aa5ba540366843a93";
         assertEquals(expected, serialized);
 
-        Walls deserialized = Walls.deserialize(serialized);
+        Walls deserialized = Walls.deserialize(serialized, 300, 300);
         assertEquals(original, deserialized);
     }
 

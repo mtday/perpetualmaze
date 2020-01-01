@@ -1,23 +1,16 @@
 package com.perpetualmaze.generator;
 
+import com.perpetualmaze.model.*;
+
 import java.util.Optional;
 import java.util.Random;
 
-import static com.perpetualmaze.generator.ExitDirection.*;
+import static com.perpetualmaze.model.ExitDirection.*;
 
 public class MazeGenerator {
-    private final short width;
-    private final short height;
-    private final long randomSeed;
-
-    public MazeGenerator(int width, int height, long randomSeed) {
-        this.width = (short) width;
-        this.height = (short) height;
-        this.randomSeed = randomSeed;
-    }
-
-    public Maze createMaze(Maze previousMaze) {
-        Random random = new Random(randomSeed * (previousMaze == null ? 1 : previousMaze.getMinLevel()));
+    public static Maze createMaze(int width, int height) {
+        int level = 1;
+        Random random = new Random(level);
         boolean[][] cellInclusion = new boolean[height][width];
         ExitDirection[][] exitDirections = new ExitDirection[height][width];
         Walls walls = new Walls(width, height);
@@ -28,98 +21,78 @@ public class MazeGenerator {
             walls.setRightWall(new Coord(row, width - 1)); // all the right-most right walls
         }
 
-        if (previousMaze != null) {
-            // start with entry cells in the bottom for each exit from the previous maze
-            for (int col = 0; col < width; col++) {
-                if (!previousMaze.getWalls().hasTopWall(new Coord(0, col))) {
-                    cellInclusion[height - 1][col] = true;
-                    walls.clearAllWalls(new Coord(height - 1, col));
-                }
+        // start with a random entry point in the bottom
+        Coord entry = new Coord(height - 1, random.nextInt(width));
+        cellInclusion[entry.getRow()][entry.getCol()] = true;
+        walls.clearBottomWall(entry);
+
+        // start with a cell from the top row
+        Coord start = new Coord(0, random.nextInt(width));
+        Optional<Coord> excludedCell = Optional.of(start);
+        while (excludedCell.isPresent()) {
+            randomWalk(random, cellInclusion, exitDirections, walls, excludedCell.get(), width, height);
+            excludedCell = getRandomExcludedCell(random, cellInclusion, width, height);
+        }
+        walls.clearTopWall(start); // include an exit to the top
+
+        return new Maze()
+                .setId(new MazeId().setLevel(level).setWidth(width).setHeight(height))
+                .setSerialized(walls.serialize());
+    }
+
+    public static Maze createMaze(Maze previousMaze) {
+        int level = previousMaze.getId().getLevel() + 1;
+        int width = previousMaze.getId().getWidth();
+        int height = previousMaze.getId().getHeight();
+
+        Random random = new Random(level);
+        boolean[][] cellInclusion = new boolean[height][width];
+        ExitDirection[][] exitDirections = new ExitDirection[height][width];
+        Walls walls = new Walls(width, height);
+
+        // all the left- and right-most edges are set to true
+        for (int row = 0; row < height; row++) {
+            walls.setLeftWall(new Coord(row, 0)); // all the column 0 left walls
+            walls.setRightWall(new Coord(row, width - 1)); // all the right-most right walls
+        }
+
+        // start with entry cells in the bottom for each exit from the previous maze
+        Walls previousWalls = Walls.deserialize(previousMaze.getSerialized(), width, height);
+        for (int col = 0; col < width; col++) {
+            if (!previousWalls.hasTopWall(new Coord(0, col))) {
+                cellInclusion[height - 1][col] = true;
+                walls.clearAllWalls(new Coord(height - 1, col));
             }
-        } else {
-            // start with a random entry point in the bottom
-            Coord entry = new Coord(height - 1, random.nextInt(width));
-            cellInclusion[entry.getRow()][entry.getCol()] = true;
-            walls.clearBottomWall(entry);
         }
 
         // start with a cell from the top row
         Coord start = new Coord(0, random.nextInt(width));
         Optional<Coord> excludedCell = Optional.of(start);
         while (excludedCell.isPresent()) {
-            randomWalk(random, cellInclusion, exitDirections, walls, excludedCell.get());
-            excludedCell = getRandomExcludedCell(random, cellInclusion);
+            randomWalk(random, cellInclusion, exitDirections, walls, excludedCell.get(), width, height);
+            excludedCell = getRandomExcludedCell(random, cellInclusion, width, height);
         }
         walls.clearTopWall(start); // include an exit to the top
 
-        /*
-        while (!findSolution(walls)) {
-            // randomly open up a gap along the top wall to allow exit from this maze
-            walls.clearTopWall(new Coord(0, random.nextInt(width)));
-        }
-         */
-
         return new Maze()
-                .setMinLevel(previousMaze == null ? 1 : previousMaze.getMinLevel() + height)
-                .setWidth(width)
-                .setHeight(height)
-                .setWalls(walls);
+                .setId(new MazeId().setLevel(level).setWidth(width).setHeight(height))
+                .setSerialized(walls.serialize());
     }
 
-    /*
-    private boolean findSolution(Walls walls) {
-        boolean[][] seen = new boolean[height][width];
-        Queue<Coord> toCheck = new ArrayDeque<>();
-
-        // add maze entry coords into the list
-        for (int col = 0; col < width; col++) {
-            Coord coord = new Coord(height - 1, col);
-            if (!walls.hasBottomWall(coord)) {
-                toCheck.offer(coord);
-            }
-        }
-
-        // do a breadth-first search
-        while (!toCheck.isEmpty()) {
-            Coord current = toCheck.poll();
-            if (isInvalid(current) || seen[current.getRow()][current.getCol()]) {
-                continue;
-            }
-
-            seen[current.getRow()][current.getCol()] = true;
-            if (current.getRow() == 0 && !walls.hasTopWall(current)) {
-                // found an exit
-                return true;
-            }
-            if (!walls.hasTopWall(current)) {
-                toCheck.offer(new Coord(current).update(UP));
-            }
-            if (!walls.hasBottomWall(current)) {
-                toCheck.offer(new Coord(current).update(DOWN));
-            }
-            if (!walls.hasLeftWall(current)) {
-                toCheck.offer(new Coord(current).update(LEFT));
-            }
-            if (!walls.hasRightWall(current)) {
-                toCheck.offer(new Coord(current).update(RIGHT));
-            }
-        }
-        return false;
-    }
-     */
-
-    private void randomWalk(Random random,
-                            boolean[][] cellInclusion,
-                            ExitDirection[][] exitDirections,
-                            Walls walls,
-                            Coord start) {
+    private static void randomWalk(Random random,
+                                   boolean[][] cellInclusion,
+                                   ExitDirection[][] exitDirections,
+                                   Walls walls,
+                                   Coord start,
+                                   int width,
+                                   int height) {
         // randomly walk through cells til we find an included cell
         Coord currentCoord = new Coord(start);
         while (!cellInclusion[currentCoord.getRow()][currentCoord.getCol()]) {
             ExitDirection exitDirection = ExitDirection.random(random);
             exitDirections[currentCoord.getRow()][currentCoord.getCol()] = exitDirection;
             currentCoord.update(exitDirection);
-            if (isInvalid(currentCoord)) {
+            if (isInvalid(currentCoord, width, height)) {
                 currentCoord.revert(exitDirection);
             }
         }
@@ -148,8 +121,8 @@ public class MazeGenerator {
         }
     }
 
-    private Optional<Coord> getRandomExcludedCell(Random random, boolean[][] cellInclusion) {
-        int excludedCells = getExcludedCellCount(cellInclusion);
+    private static Optional<Coord> getRandomExcludedCell(Random random, boolean[][] cellInclusion, int width, int height) {
+        int excludedCells = getExcludedCellCount(cellInclusion, width, height);
         if (excludedCells == 0) {
             return Optional.empty();
         }
@@ -170,7 +143,7 @@ public class MazeGenerator {
             boolean done = rowModifier == 0 && colModifier == 0;
             while (!done) {
                 coord.update(rowModifier, colModifier);
-                done = isInvalid(coord);
+                done = isInvalid(coord, width, height);
                 if (!done && !cellInclusion[coord.getRow()][coord.getCol()]) {
                     return Optional.of(coord);
                 }
@@ -178,7 +151,7 @@ public class MazeGenerator {
         }
     }
 
-    private int getExcludedCellCount(boolean[][] cellInclusion) {
+    private static int getExcludedCellCount(boolean[][] cellInclusion, int width, int height) {
         int count = 0;
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
@@ -188,8 +161,7 @@ public class MazeGenerator {
         return count;
     }
 
-    private boolean isInvalid(Coord coord) {
+    private static boolean isInvalid(Coord coord, int width, int height) {
         return coord.getRow() < 0 || coord.getCol() < 0 || coord.getRow() >= height || coord.getCol() >= width;
     }
-
 }

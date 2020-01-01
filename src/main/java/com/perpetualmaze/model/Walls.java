@@ -1,4 +1,4 @@
-package com.perpetualmaze.generator;
+package com.perpetualmaze.model;
 
 import java.io.ByteArrayOutputStream;
 import java.util.BitSet;
@@ -162,25 +162,19 @@ public class Walls {
         }
         byte[] compressed = outputStream.toByteArray();
 
-        String sizes = String.format("%d:%d:", width, height);
-        StringBuilder serialized = new StringBuilder(sizes.length() + compressed.length * 2);
-        serialized.append(sizes);
+        StringBuilder serialized = new StringBuilder(compressed.length * 2);
         for (byte b : compressed) {
             serialized.append(String.format("%02x", b));
         }
         return serialized.toString();
     }
 
-    public static Walls deserialize(String serialized) {
-        String[] parts = serialized.split(":");
-        assert (parts.length == 3);
-        int width = Integer.parseInt(parts[0]);
-        int height = Integer.parseInt(parts[1]);
-        int len = parts[2].length();
+    public static Walls deserialize(String serialized, int width, int height) {
+        int len = serialized.length();
         byte[] compressed = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
-            compressed[i / 2] = (byte) ((Character.digit(parts[2].charAt(i), 16) << 4)
-                    + Character.digit(parts[2].charAt(i + 1), 16));
+            compressed[i / 2] = (byte) ((Character.digit(serialized.charAt(i), 16) << 4)
+                    + Character.digit(serialized.charAt(i + 1), 16));
         }
         Inflater inflater = new Inflater();
         inflater.setInput(compressed);

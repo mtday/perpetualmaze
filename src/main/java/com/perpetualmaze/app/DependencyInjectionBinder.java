@@ -1,5 +1,7 @@
 package com.perpetualmaze.app;
 
+import com.perpetualmaze.store.MazeStore;
+import com.perpetualmaze.store.jdbc.JdbcMazeStore;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
@@ -23,16 +25,8 @@ public class DependencyInjectionBinder extends AbstractBinder {
         DataSource dataSource = getDataSource(props);
         bind(dataSource).to(DataSource.class);
 
-        /*
-        GameStore gameStore = new PostgresGameStore(dataSource);
-        bind(gameStore).to(GameStore.class);
-
-        HighScoreStore highScoreStore = new PostgresHighScoreStore(dataSource);
-        bind(highScoreStore).to(HighScoreStore.class);
-
-        PieceStore pieceStore = new PostgresPieceStore(dataSource);
-        bind(pieceStore).to(PieceStore.class);
-         */
+        MazeStore mazeStore = new JdbcMazeStore(dataSource);
+        bind(mazeStore).to(MazeStore.class);
     }
 
     private Properties getProperties() {

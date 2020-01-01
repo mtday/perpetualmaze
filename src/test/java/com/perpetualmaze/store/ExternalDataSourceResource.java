@@ -15,7 +15,7 @@ public class ExternalDataSourceResource extends ExternalResource {
         super.before();
 
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:hsqldb:mem:db");
+        config.setJdbcUrl("jdbc:hsqldb:mem:db;sql.syntax_pgs=true");
         config.setUsername("SA");
         config.setPassword("");
         config.setAutoCommit(true);

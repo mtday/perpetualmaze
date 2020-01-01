@@ -1,4 +1,4 @@
-package com.perpetualmaze.generator;
+package com.perpetualmaze.model;
 
 import java.util.Random;
 
