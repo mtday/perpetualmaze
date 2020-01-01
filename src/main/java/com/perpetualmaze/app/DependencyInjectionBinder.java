@@ -60,11 +60,7 @@ public class DependencyInjectionBinder extends AbstractBinder {
         config.setAutoCommit(true);
 
         HikariDataSource dataSource = new HikariDataSource(config);
-
-        Flyway flyway = new Flyway();
-        flyway.setDataSource(dataSource);
-        flyway.migrate();
-
+        Flyway.configure().dataSource(dataSource).load().migrate();
         return dataSource;
     }
 }
