@@ -66,35 +66,60 @@ function processMaze(maze) {
     }
 }
 
+function mouseEnterCell(level, row, col) {
+    var cellId = 'cell_' + level + '_' + row + '_' + col;
+    $('#' + cellId).css('background-color', 'cyan');
+}
+
+function mouseExitCell(level, row, col) {
+    var cellId = 'cell_' + level + '_' + row + '_' + col;
+    $('#' + cellId).css('background-color', 'white');
+}
+
+function mouseClickCell(level, row, col) {
+    var cellId = 'cell_' + level + '_' + row + '_' + col;
+    $('#' + cellId).css('background-color', 'red');
+}
+
+function generateMazeRowHtml(maze, row) {
+    var html = '';
+    html += '<tr>';
+    for (var col = 0; col < maze.width; col++) {
+        var topWall = hasTopWall(row, col, maze);
+        var bottomWall = hasBottomWall(row, col, maze);
+        var leftWall = hasLeftWall(row, col, maze);
+        var rightWall = hasRightWall(row, col, maze);
+
+        styles = [];
+        styles.push('width:' + cellSize + 'px;');
+        styles.push('height:' + cellSize + 'px;');
+        styles.push('font-size:1px;');
+        styles.push('border-style:solid;');
+        styles.push('border-top-width:' + (topWall ? '1px' : '0px') + ';');
+        styles.push('border-bottom-width:' + (bottomWall ? '1px' : '0px') + ';');
+        styles.push('border-left-width:' + (leftWall ? '1px' : '0px') + ';');
+        styles.push('border-right-width:' + (rightWall ? '1px' : '0px') + ';');
+        styles.push('border-color:black;');
+
+        var cellId = 'cell_' + maze.level + '_' + row + '_' + col;
+
+        html += '<td id="' + cellId + '"';
+        html += '    style="' + styles.join('') + '"';
+        html += '    onmouseover="javascript:mouseEnterCell(' + maze.level + ', ' + row + ', ' + col + ');"';
+        html += '    onmouseout="javascript:mouseExitCell(' + maze.level + ', ' + row + ', ' + col + ');"';
+        html += '    onclick="javascript:mouseClickCell(' + maze.level + ', ' + row + ', ' + col + ');">';
+        html += '&nbsp;';
+        html += '</td>';
+    }
+    html += '</tr>';
+    return html;
+}
+
 function generateMazeHtml() {
     var html = '';
     html += '<table cellpadding="0" cellspacing="0">';
     for (var row = 0; row < currentMaze.height; row++) {
-        html += '<tr>';
-        for (var col = 0; col < currentMaze.width; col++) {
-            var topWall = hasTopWall(row, col, currentMaze);
-            var bottomWall = hasBottomWall(row, col, currentMaze);
-            var leftWall = hasLeftWall(row, col, currentMaze);
-            var rightWall = hasRightWall(row, col, currentMaze);
-
-            styles = [];
-            styles.push('width:' + cellSize + 'px;');
-            styles.push('height:' + cellSize + 'px;');
-            styles.push('font-size:1px;');
-            styles.push('padding:0px;');
-            styles.push('margin:0px;');
-            styles.push('border-style:solid;');
-            styles.push('border-top-width:' + (topWall ? '1px' : '0px') + ';');
-            styles.push('border-bottom-width:' + (bottomWall ? '1px' : '0px') + ';');
-            styles.push('border-left-width:' + (leftWall ? '1px' : '0px') + ';');
-            styles.push('border-right-width:' + (rightWall ? '1px' : '0px') + ';');
-            styles.push('border-color:black;');
-
-            html += '<td style="' + styles.join('') + '">';
-            html += '&nbsp;';
-            html += '</td>';
-        }
-        html += '</tr>';
+        html += generateMazeRowHtml(currentMaze, row);
     }
     html += '</table>';
     return html;
