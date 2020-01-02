@@ -252,7 +252,7 @@ public class WallsTest {
     }
 
     @Test
-    public void testRoundTripSerializationEmpty() {
+    public void testRoundTripSerializationEmptyNoCompression() {
         Walls original = new Walls(3, 4);
         String serialized = original.serialize();
         assertEquals("789c030000000001", serialized);
@@ -262,7 +262,7 @@ public class WallsTest {
     }
 
     @Test
-    public void testRoundTripSerializationSomeWalls() {
+    public void testRoundTripSerializationSomeWallsNoCompression() {
         Walls original = new Walls(3, 4);
         original.setAllWalls(new Coord(0, 0));
         original.setAllWalls(new Coord(1, 1));
@@ -276,7 +276,7 @@ public class WallsTest {
     }
 
     @Test
-    public void testRoundTripSerializationAllWalls() {
+    public void testRoundTripSerializationAllWallsNoCompression() {
         Walls original = new Walls(3, 4);
         for (int row = 0; row < original.getHeight(); row++) {
             for (int col = 0; col < original.getWidth(); col++) {
@@ -291,7 +291,7 @@ public class WallsTest {
     }
 
     @Test
-    public void testRoundTripSerializationAllWallsLarge() {
+    public void testRoundTripSerializationAllWallsLargeNoCompression() {
         Walls original = new Walls(300, 300);
         for (int row = 0; row < original.getHeight(); row += 2) {
             for (int col = 0; col < original.getWidth(); col += 2) {

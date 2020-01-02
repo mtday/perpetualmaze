@@ -171,13 +171,13 @@ public class Walls {
 
     public static Walls deserialize(String serialized, int width, int height) {
         int len = serialized.length();
-        byte[] compressed = new byte[len / 2];
+        byte[] bytes = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
-            compressed[i / 2] = (byte) ((Character.digit(serialized.charAt(i), 16) << 4)
+            bytes[i / 2] = (byte) ((Character.digit(serialized.charAt(i), 16) << 4)
                     + Character.digit(serialized.charAt(i + 1), 16));
         }
         Inflater inflater = new Inflater();
-        inflater.setInput(compressed);
+        inflater.setInput(bytes);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             byte[] buffer = new byte[1024];
@@ -188,8 +188,9 @@ public class Walls {
         } catch (DataFormatException badData) {
             throw new RuntimeException("Unexpected bad data: " + badData.getMessage(), badData);
         }
+        byte[] decompressed = outputStream.toByteArray();
         Walls walls = new Walls(width, height);
-        walls.getWallBits().or(BitSet.valueOf(outputStream.toByteArray()));
+        walls.getWallBits().or(BitSet.valueOf(decompressed));
         return walls;
     }
 

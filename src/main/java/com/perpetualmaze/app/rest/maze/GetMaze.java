@@ -26,8 +26,8 @@ public class GetMaze {
 
     @GET
     public Response get(@PathParam("level") int level,
-                        @QueryParam("width") @DefaultValue("200") int width,
-                        @QueryParam("height") @DefaultValue("200") int height) {
+                        @QueryParam("width") @DefaultValue("120") int width,
+                        @QueryParam("height") @DefaultValue("120") int height) {
         // return the existing maze if it exists in the store
         MazeId id = new MazeId().setLevel(level).setWidth(width).setHeight(height);
         Optional<Maze> existing = mazeStore.get(id);
